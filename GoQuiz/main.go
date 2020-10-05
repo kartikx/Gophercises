@@ -35,26 +35,31 @@ func main() {
 
 	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 
-	fmt.Println("Dhinka CHi")
+	// Should I have this in the For Loop?
+	answerChannel := make(chan string)
 
-	for i, problem := range problems {
-		select {
-		case <-timer.C:
-			fmt.Printf("Thanks for taking the Quiz. You scored: %d points \n", score)
-			return
-		default:
-			fmt.Printf("Problem #%d: %s = ", i+1, problem.question)
+	for i, problem := range problems {		
+		fmt.Printf("Problem #%d: %s = ", i+1, problem.question)
+
+		go func() {
 			var answer string
 			fmt.Scanf("%s\n", &answer)
+			answerChannel <- answer
+		}()
 
+		select {
+		case <-timer.C:
+			fmt.Printf("\nThanks for taking the Quiz. You scored: %d points \n", score)
+			return
+		case answer := <-answerChannel:
 			if answer == problem.answer {
 				score++
-			} else {
-				fmt.Printf("Thanks for taking the Quiz. You scored: %d points \n", score)
-				return;
 			}
 		}
-	}}
+	}
+
+	fmt.Printf("Thanks for taking the Quiz. You scored: %d points \n", score)
+}
 
 func parseLines(lines [][]string) []problem {
 	problems := make([]problem, len(lines))
