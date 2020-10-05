@@ -26,16 +26,29 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	fmt.Printf("%v\n", problems)
 
-	
+	score := 0
+
+	for i, problem := range problems {
+		fmt.Printf("Problem #%d: %s = ", i+1, problem.question)
+		var answer string
+		fmt.Scanf("%s\n", &answer)
+
+		if answer == problem.answer {
+			score++
+		} else {
+			break
+		}
+	}
+
+	fmt.Printf("Thanks for taking the Quiz. You scored: %d points \n", score)
 }
 
 func parseLines(lines [][]string) []problem {
 	problems := make([]problem, len(lines))
 
 	for i, line := range lines {
-		problems[i] = problem{line[0], line[1]}
+		problems[i] = problem{line[0], strings.TrimSpace(line[1])}
 	}
 
 	return problems
